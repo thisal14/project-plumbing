@@ -522,43 +522,96 @@
         .hero {
             padding: 40px 0 80px;
             position: relative;
-            min-height: 80vh;
+            min-height: 85vh;
             display: flex;
             align-items: center;
             background: #0F172A;
-            /* fallback */
+            overflow: hidden;
         }
 
-        /* Hero Background Image (CDN) */
+        /* Hero Background Image */
         .hero-bg {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* Precisely targets the plumber's face — 55% across, 28% down */
+            object-position: 55% 28%;
             z-index: 0;
             pointer-events: none;
             user-select: none;
+            display: block;
+            animation: heroBgZoom 20s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        /* Removed the separate @media override — face position is same on all screens */
+
+        @keyframes heroBgZoom {
+            0%   { transform: scale(1.00); }
+            100% { transform: scale(1.08); }
         }
 
         /* Dark overlay for readability */
         .hero-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg,
-                    rgba(15, 23, 42, 0.72) 0%,
-                    rgba(15, 23, 42, 0.45) 50%,
-                    rgba(15, 23, 42, 0.30) 100%);
-            z-index: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(15, 23, 42, 0.80) 0%,
+                rgba(15, 23, 42, 0.55) 50%,
+                rgba(15, 23, 42, 0.35) 100%
+            );
+            z-index: 1;
+        }
+
+        /* Extra bottom-fade on mobile so text always readable */
+        .hero-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15,23,42,0.55) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .hero-container {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
             gap: 60px;
             align-items: center;
+        }
+
+        /* ============================================================
+           Hero entrance animations
+           ============================================================ */
+        .hero-animate {
+            opacity: 0;
+            transform: translateY(28px);
+            animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes heroFadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-animate-d1 { animation-delay: 0.1s; }
+        .hero-animate-d2 { animation-delay: 0.25s; }
+        .hero-animate-d3 { animation-delay: 0.4s; }
+        .hero-animate-d4 { animation-delay: 0.55s; }
+        .hero-animate-d5 { animation-delay: 0.7s; }
+        .hero-animate-d6 { animation-delay: 0.85s; }
+
+        /* Hero image slide-in from right */
+        .hero-animate-right {
+            opacity: 0;
+            transform: translateX(40px) scale(0.97);
+            animation: heroSlideRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+        }
+        @keyframes heroSlideRight {
+            to { opacity: 1; transform: translateX(0) scale(1); }
         }
 
         /* Hero text over image — white text for contrast */
@@ -669,136 +722,163 @@
             color: var(--clr-primary);
         }
 
-        /* Hero Image */
-        .hero-image-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .image-wrapper {
-            position: relative;
-            padding: 12px;
+        /* Hero Right Panel — Dispatch Card */
+        .dispatch-card {
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: var(--radius-lg);
+            padding: 36px 32px;
             width: 100%;
-            border-radius: var(--radius-md);
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.30),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        .hero-showcase-img {
-            width: 100%;
-            height: 420px;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-            border: 1px solid rgba(255, 255, 255, 0.06);
+        .dispatch-live-row {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: rgba(255, 255, 255, 0.3);
+            justify-content: space-between;
         }
 
-        .hero-showcase-img svg {
-            width: 80px;
-            height: 80px;
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.2);
-            stroke-width: 1.5;
-        }
-
-        .floating-badge {
-            position: absolute;
-            padding: 14px 20px;
+        .dispatch-live-badge {
             display: flex;
             align-items: center;
-            gap: 14px;
-            min-width: 160px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-            animation: floatBadge 4s ease-in-out infinite alternate;
+            gap: 8px;
+            background: rgba(22, 163, 74, 0.18);
+            border: 1px solid rgba(22, 163, 74, 0.35);
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #4ADE80;
         }
 
-        .floating-badge:nth-child(2) {
-            animation-delay: 2s;
-        }
-
-        .badge-top-right {
-            top: 20px;
-            right: -10px;
-        }
-
-        .badge-bottom-left {
-            bottom: 20px;
-            left: -10px;
-        }
-
-        @keyframes floatBadge {
-            0% {
-                transform: translateY(0px);
-            }
-
-            100% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .badge-icon-wrap {
-            position: relative;
-            width: 14px;
-            height: 14px;
-            flex-shrink: 0;
-        }
-
-        .badge-icon-dot {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: var(--clr-success);
+        .dispatch-live-dot {
+            width: 7px;
+            height: 7px;
+            background: #4ADE80;
             border-radius: 50%;
+            box-shadow: 0 0 8px #4ADE80;
+            animation: pulse-dot 1.5s infinite;
         }
 
-        .animate-ping {
-            animation: ping-dot 1.8s infinite;
+        .dispatch-eta-pill {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 50px;
+            padding: 5px 12px;
         }
 
-        @keyframes ping-dot {
-            0% {
-                transform: scale(0.8);
-                opacity: 0.8;
-            }
-
-            70% {
-                transform: scale(2);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(2);
-                opacity: 0;
-            }
+        .dispatch-card-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
         }
 
-        .badge-title {
+        .dispatch-card-title span {
+            color: #7DD3FC;
+        }
+
+        .dispatch-stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dispatch-stat {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .dispatch-stat-num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1;
+            margin-bottom: 4px;
+            font-family: var(--font-heading);
+        }
+
+        .dispatch-stat-lbl {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.55);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .dispatch-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dispatch-cta .btn {
+            width: 100%;
+            justify-content: center;
+            font-size: 1rem;
+            padding: 16px 24px;
+            min-height: 54px;
+        }
+
+        .dispatch-trust-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .dispatch-trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .dispatch-trust-val {
             font-size: 0.9rem;
             font-weight: 700;
-            color: var(--clr-text-white);
-            line-height: 1.2;
+            color: #FFFFFF;
         }
 
-        .badge-desc {
-            font-size: 0.7rem;
-            color: var(--clr-text-gray);
+        .dispatch-trust-lbl {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
         }
 
-        .stars {
-            color: var(--clr-warning);
-            font-size: 0.8rem;
+        .dispatch-trust-sep {
+            width: 1px;
+            height: 28px;
+            background: rgba(255,255,255,0.12);
+        }
+
+        .dispatch-rating-stars {
+            color: #FCD34D;
+            font-size: 0.75rem;
             letter-spacing: 1px;
+        }
+
+        /* ETA live counter */
+        #dispatch-timer {
+            font-variant-numeric: tabular-nums;
         }
 
         /* Trust Bar */
@@ -846,6 +926,12 @@
         .stat-card {
             text-align: center;
             padding: 8px;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: default;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.04);
         }
 
         .stat-number {
@@ -857,6 +943,7 @@
             background-clip: text;
             margin-bottom: 2px;
             line-height: 1.2;
+            transition: all 0.3s ease;
         }
 
         .stat-label {
@@ -864,6 +951,39 @@
             color: var(--clr-text-gray);
             font-weight: 500;
         }
+
+        /* ==========================================================================
+           Scroll Reveal
+           ========================================================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.reveal-left {
+            transform: translateX(-40px);
+        }
+
+        .reveal.reveal-right {
+            transform: translateX(40px);
+        }
+
+        .reveal.reveal-scale {
+            transform: scale(0.92);
+        }
+
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
 
         /* ==========================================================================
            Services
@@ -2113,7 +2233,7 @@
         @media (max-width: 1024px) {
             .hero-container {
                 grid-template-columns: 1fr;
-                gap: 48px;
+                gap: 40px;
                 text-align: center;
             }
 
@@ -2140,6 +2260,12 @@
 
             .hero-title {
                 font-size: 2.8rem;
+            }
+
+            .hero-image-content {
+                width: 100%;
+                max-width: 580px;
+                margin: 0 auto;
             }
 
             .hero-showcase-img {
@@ -2238,8 +2364,30 @@
             }
 
             .hero {
-                padding: 30px 0 50px;
-                min-height: auto;
+                padding: 30px 0 60px;
+                /* Use a fixed min-height so the crop window never gets so tall
+                   that it pushes the face (at 28% from top) out of frame */
+                min-height: 600px;
+            }
+
+            /* Keep face anchor consistent — do NOT override to 'top' on mobile */
+            .hero-bg {
+                object-position: 55% 28%;
+            }
+
+            /* Stronger overlay on mobile for legibility */
+            .hero-overlay {
+                background: linear-gradient(
+                    180deg,
+                    rgba(15, 23, 42, 0.65) 0%,
+                    rgba(15, 23, 42, 0.75) 60%,
+                    rgba(15, 23, 42, 0.85) 100%
+                );
+            }
+
+            /* Stack hero: text first, image second, tighter */
+            .hero-container {
+                gap: 28px;
             }
 
             .hero-title {
@@ -2267,36 +2415,41 @@
                 gap: 12px;
             }
 
-            .hero-showcase-img {
-                height: 240px;
+            .hero-image-content {
+                max-width: 100%;
+                margin: 0 auto;
+                width: 100%;
             }
 
-            .floating-badge {
-                padding: 10px 14px;
-                min-width: 120px;
+            /* Dispatch card compact on mobile */
+            .dispatch-card {
+                padding: 24px 20px;
+                gap: 18px;
+            }
+
+            .dispatch-card-title {
+                font-size: 1.25rem;
+            }
+
+            .dispatch-stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .dispatch-stat {
+                padding: 10px 12px;
+            }
+
+            .dispatch-stat-num {
+                font-size: 1.3rem;
+            }
+
+            .dispatch-trust-row {
+                gap: 12px;
+            }
+
+            .dispatch-trust-val {
                 font-size: 0.8rem;
-            }
-
-            .badge-top-right {
-                top: 10px;
-                right: 0;
-            }
-
-            .badge-bottom-left {
-                bottom: 10px;
-                left: 0;
-            }
-
-            .badge-title {
-                font-size: 0.8rem;
-            }
-
-            .badge-desc {
-                font-size: 0.65rem;
-            }
-
-            .stars {
-                font-size: 0.7rem;
             }
 
             .section-title {
@@ -2545,8 +2698,12 @@
                 padding: 4px 10px;
             }
 
+            .hero-image-content {
+                max-width: 360px;
+            }
+
             .hero-showcase-img {
-                height: 180px;
+                height: 200px;
             }
 
             .section-title {
@@ -2719,31 +2876,31 @@
         HERO — with full background image from CDN
         ========================================================== -->
         <section class="hero">
-            <!-- Background Image (CDN) -->
-            <img class="hero-bg" src="hero.jpg" alt="Professional plumbing tools and pipes background" loading="eager"
+            <!-- Background Image -->
+            <img class="hero-bg" src="hero-bg.png" alt="Professional plumber working on copper pipes in a modern Melbourne home" loading="eager"
                 fetchpriority="high" />
             <!-- Dark overlay -->
             <div class="hero-overlay"></div>
 
             <div class="container hero-container">
                 <div class="hero-text-content">
-                    <div class="badge-row">
+                    <div class="badge-row hero-animate hero-animate-d1">
                         <span class="tag-badge">ABN: 61 643 881 654</span>
                         <span class="tag-badge accent-badge">Licensed &amp; Insured</span>
                         <span class="tag-badge emergency-tag">⭐ 5.0 ★ Google Rated</span>
                     </div>
-                    <h1 class="hero-title">Flowing Precision.<br /><span class="gradient-text">Engineered Trust.</span>
+                    <h1 class="hero-title hero-animate hero-animate-d2">Flowing Precision.<br /><span class="gradient-text">Engineered Trust.</span>
                     </h1>
-                    <p class="hero-subtitle">Premium residential, maintenance, and rapid emergency plumbing services
+                    <p class="hero-subtitle hero-animate hero-animate-d3">Premium residential, maintenance, and rapid emergency plumbing services
                         across Melbourne's West. Experiencing a plumbing crisis? Calculate our arrival time instantly.
                     </p>
 
-                    <div class="hero-actions">
+                    <div class="hero-actions hero-animate hero-animate-d4">
                         <a href="#booking" class="btn btn-primary btn-lg">Book a Premium Service</a>
                         <a href="#estimator" class="btn btn-secondary btn-lg">Check Response Time</a>
                     </div>
 
-                    <div class="hero-features">
+                    <div class="hero-features hero-animate hero-animate-d5">
                         <div class="feature-item">
                             <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2770,7 +2927,7 @@
                     </div>
 
                     <!-- Trust Bar -->
-                    <div class="trust-bar">
+                    <div class="trust-bar hero-animate hero-animate-d6">
                         <span class="trust-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
@@ -2798,37 +2955,86 @@
                     </div>
                 </div>
 
-                <div class="hero-image-content">
-                    <div class="image-wrapper">
-                        <div class="hero-showcase-img" role="img" aria-label="Plumbing tools and pipes illustration">
-                            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="50" cy="50" r="40" />
-                                <path d="M30 50h40" />
-                                <path d="M50 30v40" />
-                                <path d="M38 38l24 24" />
-                                <path d="M62 38l-24 24" />
-                                <circle cx="50" cy="50" r="12" />
-                            </svg>
+                <div class="hero-image-content hero-animate-right">
+                    <div class="dispatch-card">
+
+                        <!-- Live availability row -->
+                        <div class="dispatch-live-row">
+                            <span class="dispatch-live-badge">
+                                <span class="dispatch-live-dot"></span>
+                                Live
+                            </span>
+                            <span class="dispatch-eta-pill">⚡ Nearest tech: <strong>~18 min away</strong></span>
                         </div>
 
-                        <div class="floating-badge badge-top-right">
-                            <div class="badge-icon-wrap">
-                                <span class="badge-icon-dot animate-ping"></span>
-                                <span class="badge-icon-dot"></span>
+                        <!-- Title -->
+                        <div class="dispatch-card-title">
+                            Need a plumber<br /><span>right now?</span>
+                        </div>
+
+                        <!-- Mini stats -->
+                        <div class="dispatch-stats-row">
+                            <div class="dispatch-stat">
+                                <div class="dispatch-stat-num">30<span style="font-size:1rem;">m</span></div>
+                                <div class="dispatch-stat-lbl">Avg. Response</div>
                             </div>
-                            <div>
-                                <h4 class="badge-title">24/7 Emergency</h4>
-                                <p class="badge-desc">Active Technicians</p>
+                            <div class="dispatch-stat">
+                                <div class="dispatch-stat-num">24/7</div>
+                                <div class="dispatch-stat-lbl">Availability</div>
+                            </div>
+                            <div class="dispatch-stat">
+                                <div class="dispatch-stat-num">5<span style="color:#FCD34D;font-size:1rem;">★</span></div>
+                                <div class="dispatch-stat-lbl">Google Rating</div>
+                            </div>
+                            <div class="dispatch-stat">
+                                <div class="dispatch-stat-num">$0</div>
+                                <div class="dispatch-stat-lbl">Call-Out Hidden Fees</div>
                             </div>
                         </div>
 
-                        <div class="floating-badge badge-bottom-left">
-                            <div>
-                                <div class="stars">★★★★★</div>
-                                <p class="badge-title">5.0 Star Rated Local</p>
+                        <!-- CTAs -->
+                        <div class="dispatch-cta">
+                            <a href="tel:+61434055924" class="btn btn-emergency btn-lg">
+                                <svg style="width:20px;height:20px;flex-shrink:0;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M6.62 10.79a15.149 15.149 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                </svg>
+                                Call 0434 055 924
+                            </a>
+                            <a href="#booking" class="btn btn-secondary">
+                                <svg style="width:18px;height:18px;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                Schedule Online
+                            </a>
+                        </div>
+
+                        <!-- Trust footer -->
+                        <div class="dispatch-trust-row">
+                            <div class="dispatch-trust-item">
+                                <span class="dispatch-rating-stars">★★★★★</span>
+                                <span class="dispatch-trust-val">5.0</span>
+                                <span class="dispatch-trust-lbl">Google</span>
+                            </div>
+                            <div class="dispatch-trust-sep"></div>
+                            <div class="dispatch-trust-item">
+                                <span class="dispatch-trust-val">VBA</span>
+                                <span class="dispatch-trust-lbl">Registered</span>
+                            </div>
+                            <div class="dispatch-trust-sep"></div>
+                            <div class="dispatch-trust-item">
+                                <span class="dispatch-trust-val">$20M</span>
+                                <span class="dispatch-trust-lbl">Insured</span>
+                            </div>
+                            <div class="dispatch-trust-sep"></div>
+                            <div class="dispatch-trust-item">
+                                <span class="dispatch-trust-val">ABN</span>
+                                <span class="dispatch-trust-lbl">61 643 881</span>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -2839,19 +3045,19 @@
         ========================================================== -->
         <section class="stats-section">
             <div class="container stats-container">
-                <div class="stat-card">
-                    <h3 class="stat-number">100%</h3>
+                <div class="stat-card reveal reveal-delay-1">
+                    <h3 class="stat-number" data-count="100" data-suffix="%">100%</h3>
                     <p class="stat-label">Licensed &amp; Compliant</p>
                 </div>
-                <div class="stat-card">
-                    <h3 class="stat-number">30m</h3>
+                <div class="stat-card reveal reveal-delay-2">
+                    <h3 class="stat-number" data-count="30" data-suffix="m">30m</h3>
                     <p class="stat-label">Average Response Time</p>
                 </div>
-                <div class="stat-card">
-                    <h3 class="stat-number">1000+</h3>
+                <div class="stat-card reveal reveal-delay-3">
+                    <h3 class="stat-number" data-count="1000" data-suffix="+">1000+</h3>
                     <p class="stat-label">Melbourne Homes Restored</p>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card reveal reveal-delay-4">
                     <h3 class="stat-number">5★</h3>
                     <p class="stat-label">Google Rating Average</p>
                 </div>
@@ -2863,7 +3069,7 @@
         ========================================================== -->
         <section id="services" class="services-section">
             <div class="container">
-                <div class="section-header section-header-center">
+                <div class="section-header section-header-center reveal">
                     <span class="section-tag">What We Excel At</span>
                     <h2 class="section-title">Premium Plumbing Services</h2>
                     <p class="section-desc">Delivering world-class plumbing craftsmanship to your doorstep. We address
@@ -2871,7 +3077,7 @@
                 </div>
 
                 <!-- Filter -->
-                <div class="services-filter" role="tablist" aria-label="Filter services">
+                <div class="services-filter reveal" role="tablist" aria-label="Filter services">
                     <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All
                         Services</button>
                     <button class="filter-btn" data-filter="emergency" role="tab" aria-selected="false">🚨
@@ -2884,7 +3090,7 @@
 
                 <div class="services-grid" id="services-grid">
                     <!-- Service 1: Emergency -->
-                    <div class="service-card glass-panel emergency-card" data-category="emergency">
+                    <div class="service-card glass-panel emergency-card reveal reveal-delay-1" data-category="emergency">
                         <span class="service-badge">🚨 24/7</span>
                         <div class="service-icon-wrapper">
                             <svg class="service-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -3969,7 +4175,63 @@
         });
 
         console.log('🚰 Project Plumbing Aus — Flowing Precision. Engineered Trust.');
-        console.log('✅ Hero background image loaded from CDN.');
+
+        // ============================================================
+        // SCROLL REVEAL — IntersectionObserver
+        // ============================================================
+        (function () {
+            const revealEls = document.querySelectorAll('.reveal');
+            if (!revealEls.length) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            revealEls.forEach(el => observer.observe(el));
+        })();
+
+        // ============================================================
+        // STAT COUNTER ANIMATION
+        // ============================================================
+        (function () {
+            const counters = document.querySelectorAll('.stat-number[data-count]');
+            if (!counters.length) return;
+
+            function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+            function animateCounter(el) {
+                const target = parseInt(el.dataset.count, 10);
+                const suffix = el.dataset.suffix || '';
+                const duration = 1600;
+                const start = performance.now();
+
+                function tick(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const value = Math.round(easeOutCubic(progress) * target);
+                    el.textContent = value + suffix;
+                    if (progress < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach(el => observer.observe(el));
+        })();
+
     </script>
 
 </body>
