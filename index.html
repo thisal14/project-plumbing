@@ -2363,93 +2363,95 @@
                 display: flex;
             }
 
+            /* ── HERO — Mobile redesign ── */
             .hero {
-                padding: 30px 0 60px;
-                /* Use a fixed min-height so the crop window never gets so tall
-                   that it pushes the face (at 28% from top) out of frame */
-                min-height: 600px;
+                padding: 0;
+                /* Fill exactly the viewport — no overflow, no scrolling to reach CTA */
+                min-height: 100svh;
+                min-height: 100vh; /* fallback for older browsers */
             }
 
-            /* Keep face anchor consistent — do NOT override to 'top' on mobile */
+            /* Keep plumber face visible on mobile */
             .hero-bg {
                 object-position: 55% 28%;
             }
 
-            /* Stronger overlay on mobile for legibility */
+            /* Directional overlay:
+               Dark top-left  → sharp text contrast
+               Light center-right → lets the plumber's face breathe through
+               Dark bottom   → extra readability for CTAs */
             .hero-overlay {
                 background: linear-gradient(
-                    180deg,
-                    rgba(15, 23, 42, 0.65) 0%,
-                    rgba(15, 23, 42, 0.75) 60%,
-                    rgba(15, 23, 42, 0.85) 100%
+                    155deg,
+                    rgba(15, 23, 42, 0.92) 0%,
+                    rgba(15, 23, 42, 0.72) 38%,
+                    rgba(15, 23, 42, 0.44) 58%,
+                    rgba(15, 23, 42, 0.84) 100%
                 );
             }
 
-            /* Stack hero: text first, image second, tighter */
+            /* Single column, left-aligned, padded bottom for sticky CTA bar */
             .hero-container {
-                gap: 28px;
+                gap: 0;
+                align-items: flex-start;
+                text-align: left;
+                padding-bottom: 148px;
+            }
+
+            /* Override the 1024px centered alignment for hero elements */
+            .badge-row {
+                justify-content: flex-start;
             }
 
             .hero-title {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
+                margin-bottom: 14px;
             }
 
             .hero-subtitle {
-                font-size: 1rem;
+                font-size: 0.95rem;
+                line-height: 1.7;
+                margin-left: 0;
+                margin-right: 0;
+                margin-bottom: 24px;
             }
 
+            /* Buttons: full-width column, left-anchored */
             .hero-actions {
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+                justify-content: flex-start;
                 width: 100%;
+                margin-bottom: 24px;
             }
 
             .hero-actions .btn {
                 width: 100%;
-                max-width: 320px;
-            }
-
-            .hero-features {
-                flex-direction: column;
-                align-items: center;
-                gap: 12px;
-            }
-
-            .hero-image-content {
                 max-width: 100%;
-                margin: 0 auto;
-                width: 100%;
+                justify-content: center;
+                text-align: center;
             }
 
-            /* Dispatch card compact on mobile */
-            .dispatch-card {
-                padding: 24px 20px;
-                gap: 18px;
+            /* Features: compact horizontal pill row instead of vertical list */
+            .hero-features {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 10px 20px;
             }
 
-            .dispatch-card-title {
-                font-size: 1.25rem;
-            }
-
-            .dispatch-stats-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-
-            .dispatch-stat {
-                padding: 10px 12px;
-            }
-
-            .dispatch-stat-num {
-                font-size: 1.3rem;
-            }
-
-            .dispatch-trust-row {
-                gap: 12px;
-            }
-
-            .dispatch-trust-val {
+            .hero-features .feature-item {
                 font-size: 0.8rem;
+            }
+
+            /* Trust bar is redundant in hero on mobile — stats section below covers it */
+            .hero .trust-bar {
+                display: none;
+            }
+
+            /* Dispatch card hidden on mobile — sticky CTA bar at bottom replaces it */
+            .hero-image-content {
+                display: none;
             }
 
             .section-title {
@@ -2690,7 +2692,7 @@
             }
 
             .hero-title {
-                font-size: 1.8rem;
+                font-size: 2.2rem; /* was 1.8rem — too weak on small phones */
             }
 
             .badge-row .tag-badge {
@@ -2791,6 +2793,71 @@
             }
         }
 
+        /* ============================================================
+           MOBILE HERO CTA BAR
+           Two-button bar that floats above the floating call widget
+           and disappears once the user scrolls past the hero.
+           ============================================================ */
+        @media (max-width: 768px) {
+            #mobile-hero-cta {
+                display: flex;
+                position: fixed;
+                bottom: 80px; /* above floating-call-widget (60px) + gap */
+                left: 16px;
+                right: 16px;
+                gap: 10px;
+                z-index: 9000;
+                transform: translateY(22px);
+                opacity: 0;
+                pointer-events: none;
+                transition: transform 0.42s cubic-bezier(0.23, 1, 0.32, 1),
+                            opacity   0.42s ease;
+            }
+            #mobile-hero-cta.visible {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: all;
+            }
+            .mobile-cta-btn {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 14px 18px;
+                border-radius: 16px;
+                font-family: var(--font-primary);
+                font-size: 0.9rem;
+                font-weight: 700;
+                text-decoration: none;
+                letter-spacing: 0.2px;
+                -webkit-tap-highlight-color: transparent;
+                transition: transform 0.15s ease, box-shadow 0.15s ease;
+            }
+            .mobile-cta-btn:active {
+                transform: scale(0.96);
+            }
+            /* Call button — high-urgency orange */
+            .mobile-cta-call {
+                background: linear-gradient(135deg, #ea580c, #c2410c);
+                color: #ffffff;
+                box-shadow: 0 6px 22px rgba(234, 88, 12, 0.52),
+                            inset 0 1px 0 rgba(255,255,255,0.18);
+            }
+            .mobile-cta-call:active {
+                box-shadow: 0 3px 10px rgba(234, 88, 12, 0.40);
+            }
+            /* Book button — dark glassmorphism */
+            .mobile-cta-book {
+                background: rgba(15, 23, 42, 0.80);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.22);
+                color: #ffffff;
+                box-shadow: 0 6px 22px rgba(0, 0, 0, 0.32);
+            }
+        }
+
         .text-center {
             text-align: center;
         }
@@ -2814,6 +2881,9 @@
         .mb-2 {
             margin-bottom: 16px;
         }
+
+        /* Mobile CTA bar: hidden on desktop, activated via media query below */
+        #mobile-hero-cta { display: none; }
 
         /* ==========================================================================
            ELITE FEATURES
@@ -2994,6 +3064,22 @@
 
     <!-- Scroll progress bar -->
     <div id="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Mobile Hero CTA Bar — slides up while hero is visible on phones -->
+    <div id="mobile-hero-cta" aria-label="Quick contact options">
+        <a href="tel:+61434055924" class="mobile-cta-btn mobile-cta-call">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M6.62 10.79a15.149 15.149 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+            Call Now
+        </a>
+        <a href="#booking" class="mobile-cta-btn mobile-cta-book">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Book Online
+        </a>
+    </div>
 
     <!-- Custom cursor — Pipe Wrench (desktop only, hidden on touch) -->
     <div id="cursor-wrench" aria-hidden="true">
@@ -4761,6 +4847,32 @@
                 });
             }, { threshold: 0.3 });
             document.querySelectorAll('.word-reveal').forEach(el => obs.observe(el));
+        })();
+
+        // ============================================================
+        // MOBILE HERO CTA BAR — show while hero visible, hide after
+        // ============================================================
+        (function () {
+            const mobileCta = document.getElementById('mobile-hero-cta');
+            const heroEl    = document.querySelector('.hero');
+            if (!mobileCta || !heroEl) return;
+
+            function isMobile() { return window.innerWidth <= 768; }
+
+            const obs = new IntersectionObserver(([entry]) => {
+                if (!isMobile()) {
+                    mobileCta.classList.remove('visible');
+                    return;
+                }
+                mobileCta.classList.toggle('visible', entry.isIntersecting);
+            }, { threshold: 0.05 });
+
+            obs.observe(heroEl);
+
+            // Re-evaluate on resize (e.g. rotate phone)
+            window.addEventListener('resize', () => {
+                if (!isMobile()) mobileCta.classList.remove('visible');
+            }, { passive: true });
         })();
 
     </script>
