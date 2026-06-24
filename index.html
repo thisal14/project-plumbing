@@ -2814,10 +2814,202 @@
         .mb-2 {
             margin-bottom: 16px;
         }
+
+        /* ==========================================================================
+           ELITE FEATURES
+           ========================================================================== */
+
+        /* 1. Scroll Progress Bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent), var(--clr-primary-bright));
+            background-size: 200% 100%;
+            z-index: 99999;
+            box-shadow: 0 0 12px rgba(2, 132, 199, 0.7);
+            animation: progressShimmer 2s linear infinite;
+            transition: width 0.08s linear;
+        }
+        @keyframes progressShimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* 2. Custom Cursor — Pipe Wrench (desktop only) */
+        @media (pointer: fine) {
+            body { cursor: none; }
+            a, button, [role="button"], .btn, .filter-btn, .nav-link { cursor: none; }
+        }
+        /* Outer wrapper: ONLY handles position via transform — zero transition so it
+           snaps instantly to the cursor with zero lag */
+        #cursor-wrench {
+            position: fixed;
+            left: 0; top: 0;
+            width: 32px; height: 32px;
+            pointer-events: none;
+            z-index: 99997;
+            will-change: transform;
+            transition: opacity 0.3s ease; /* only opacity may animate */
+        }
+        /* Inner wrapper: handles rotation + glow with smooth easing.
+           transform-origin is at the wrench jaw tip (upper-left after scaleX flip) */
+        #cursor-wrench-r {
+            width: 100%; height: 100%;
+            transform-origin: 8px 5px;
+            filter: drop-shadow(0 0 5px rgba(2, 132, 199, 0.7));
+            transition: transform 0.22s cubic-bezier(0.23, 1, 0.32, 1),
+                        filter   0.22s ease;
+        }
+        /* Wrench path color transitions (stroke & fill on hover/click) */
+        #cursor-wrench path {
+            transition: stroke 0.18s ease, fill 0.18s ease;
+        }
+        /* Ring: stays same, positions via rAF */
+        #cursor-ring {
+            position: fixed;
+            left: 0; top: 0;
+            width: 38px; height: 38px;
+            border: 1.5px solid rgba(2, 132, 199, 0.45);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99996;
+            will-change: transform;
+            transition: width  0.28s cubic-bezier(0.23, 1, 0.32, 1),
+                        height 0.28s cubic-bezier(0.23, 1, 0.32, 1),
+                        border-color 0.28s ease,
+                        opacity      0.3s ease;
+        }
+        @media (pointer: coarse) { #cursor-wrench, #cursor-ring { display: none; } }
+
+        /* 3. Film Grain on Hero */
+        .hero-grain {
+            position: absolute;
+            inset: -50%;
+            width: 200%; height: 200%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0.055;
+            mix-blend-mode: overlay;
+            animation: grainShift 0.4s steps(1) infinite;
+        }
+        @keyframes grainShift {
+            0%   { transform: translate(0, 0); }
+            20%  { transform: translate(-4%, -3%); }
+            40%  { transform: translate(3%, 5%); }
+            60%  { transform: translate(-5%, 2%); }
+            80%  { transform: translate(4%, -4%); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* 4. Typewriter rotating tagline */
+        .hero-typewriter {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.65);
+            margin-top: -28px;
+            margin-bottom: 32px;
+            min-height: 1.5em;
+            letter-spacing: 0.5px;
+        }
+        .hero-typewriter .tw-cursor {
+            display: inline-block;
+            width: 2px; height: 1em;
+            background: var(--clr-primary-bright);
+            vertical-align: text-bottom;
+            margin-left: 2px;
+            animation: twBlink 1s step-end infinite;
+        }
+        @keyframes twBlink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+
+        /* 5. Live clock in dispatch card */
+        .dispatch-clock {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.5);
+            font-variant-numeric: tabular-nums;
+            margin-left: auto;
+        }
+
+        /* 6. 3D tilt surface — applied via JS */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.25s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.25s ease;
+        }
+        .tilt-card:hover {
+            box-shadow: 0 30px 70px rgba(0,0,0,0.28);
+        }
+
+        /* 7. Magnetic button target area */
+        .magnetic-btn {
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                        box-shadow  0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform;
+        }
+
+        /* 8. Scroll-triggered word-by-word reveal for section titles */
+        .word-reveal .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .word-reveal.in-view .word {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 9. Water-drop shimmer on dispatch card */
+        @keyframes cardShimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .dispatch-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(
+                105deg,
+                transparent 30%,
+                rgba(255,255,255,0.06) 50%,
+                transparent 70%
+            );
+            background-size: 200% 100%;
+            animation: cardShimmer 4s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .dispatch-card { position: relative; overflow: hidden; }
+        .dispatch-card > * { position: relative; z-index: 1; }
     </style>
 </head>
 
 <body>
+
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Custom cursor — Pipe Wrench (desktop only, hidden on touch) -->
+    <div id="cursor-wrench" aria-hidden="true">
+        <div id="cursor-wrench-r">
+            <!-- Lucide wrench, flipped so jaw points upper-left (NW = cursor direction) -->
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                 style="display:block; transform:scaleX(-1)">
+                <path id="wrench-svg-path"
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+                    stroke="rgba(255,255,255,0.92)" stroke-width="1.7"
+                    stroke-linecap="round" stroke-linejoin="round"
+                    fill="rgba(2,132,199,0.22)"/>
+            </svg>
+        </div>
+    </div>
+    <div id="cursor-ring" aria-hidden="true"></div>
 
     <!-- ============================================================
     TOP BANNER
@@ -2877,10 +3069,20 @@
         ========================================================== -->
         <section class="hero">
             <!-- Background Image -->
-            <img class="hero-bg" src="hero-bg.png" alt="Professional plumber working on copper pipes in a modern Melbourne home" loading="eager"
+            <img class="hero-bg" id="hero-bg-img" src="hero-bg.png" alt="Professional plumber working on copper pipes in a modern Melbourne home" loading="eager"
                 fetchpriority="high" />
             <!-- Dark overlay -->
             <div class="hero-overlay"></div>
+            <!-- Film grain overlay -->
+            <svg class="hero-grain" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <filter id="grain-filter">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch">
+                        <animate attributeName="seed" from="0" to="500" dur="3s" repeatCount="indefinite"/>
+                    </feTurbulence>
+                    <feColorMatrix type="saturate" values="0"/>
+                </filter>
+                <rect width="100%" height="100%" filter="url(#grain-filter)"/>
+            </svg>
 
             <div class="container hero-container">
                 <div class="hero-text-content">
@@ -2889,18 +3091,22 @@
                         <span class="tag-badge accent-badge">Licensed &amp; Insured</span>
                         <span class="tag-badge emergency-tag">⭐ 5.0 ★ Google Rated</span>
                     </div>
-                    <h1 class="hero-title hero-animate hero-animate-d2">Flowing Precision.<br /><span class="gradient-text">Engineered Trust.</span>
+                    <h1 class="hero-title hero-animate hero-animate-d2" id="hero-title-scramble">Flowing Precision.<br /><span class="gradient-text">Engineered Trust.</span>
                     </h1>
-                    <p class="hero-subtitle hero-animate hero-animate-d3">Premium residential, maintenance, and rapid emergency plumbing services
+                    <!-- Rotating typewriter tagline -->
+                    <span class="hero-typewriter hero-animate hero-animate-d3" id="hero-typewriter" aria-live="polite">
+                        <span id="tw-text"></span><span class="tw-cursor" aria-hidden="true"></span>
+                    </span>
+                    <p class="hero-subtitle hero-animate hero-animate-d4">Premium residential, maintenance, and rapid emergency plumbing services
                         across Melbourne's West. Experiencing a plumbing crisis? Calculate our arrival time instantly.
                     </p>
 
-                    <div class="hero-actions hero-animate hero-animate-d4">
-                        <a href="#booking" class="btn btn-primary btn-lg">Book a Premium Service</a>
-                        <a href="#estimator" class="btn btn-secondary btn-lg">Check Response Time</a>
+                    <div class="hero-actions hero-animate hero-animate-d5">
+                        <a href="#booking" class="btn btn-primary btn-lg magnetic-btn">Book a Premium Service</a>
+                        <a href="#estimator" class="btn btn-secondary btn-lg magnetic-btn">Check Response Time</a>
                     </div>
 
-                    <div class="hero-features hero-animate hero-animate-d5">
+                    <div class="hero-features hero-animate hero-animate-d6">
                         <div class="feature-item">
                             <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2927,7 +3133,7 @@
                     </div>
 
                     <!-- Trust Bar -->
-                    <div class="trust-bar hero-animate hero-animate-d6">
+                    <div class="trust-bar hero-animate" style="animation-delay:1s;">
                         <span class="trust-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
@@ -2956,7 +3162,7 @@
                 </div>
 
                 <div class="hero-image-content hero-animate-right">
-                    <div class="dispatch-card">
+                    <div class="dispatch-card tilt-card" id="dispatch-card">
 
                         <!-- Live availability row -->
                         <div class="dispatch-live-row">
@@ -2964,7 +3170,8 @@
                                 <span class="dispatch-live-dot"></span>
                                 Live
                             </span>
-                            <span class="dispatch-eta-pill">⚡ Nearest tech: <strong>~18 min away</strong></span>
+                            <span class="dispatch-clock" id="dispatch-clock" aria-live="off"></span>
+                            <span class="dispatch-eta-pill">⚡ ~18 min away</span>
                         </div>
 
                         <!-- Title -->
@@ -4182,7 +4389,6 @@
         (function () {
             const revealEls = document.querySelectorAll('.reveal');
             if (!revealEls.length) return;
-
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -4191,7 +4397,6 @@
                     }
                 });
             }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
             revealEls.forEach(el => observer.observe(el));
         })();
 
@@ -4201,15 +4406,12 @@
         (function () {
             const counters = document.querySelectorAll('.stat-number[data-count]');
             if (!counters.length) return;
-
             function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
             function animateCounter(el) {
                 const target = parseInt(el.dataset.count, 10);
                 const suffix = el.dataset.suffix || '';
                 const duration = 1600;
                 const start = performance.now();
-
                 function tick(now) {
                     const elapsed = now - start;
                     const progress = Math.min(elapsed / duration, 1);
@@ -4219,7 +4421,6 @@
                 }
                 requestAnimationFrame(tick);
             }
-
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -4228,8 +4429,338 @@
                     }
                 });
             }, { threshold: 0.5 });
-
             counters.forEach(el => observer.observe(el));
+        })();
+
+        // ============================================================
+        // 1. SCROLL PROGRESS BAR
+        // ============================================================
+        (function () {
+            const bar = document.getElementById('scroll-progress');
+            if (!bar) return;
+            function updateBar() {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                bar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+            }
+            window.addEventListener('scroll', updateBar, { passive: true });
+            updateBar();
+        })();
+
+        // ============================================================
+        // 2. CUSTOM CURSOR — Pipe Wrench
+        // Outer div: pixel-accurate position (no transition)
+        // Inner div: smooth rotation around jaw-tip (CSS transition)
+        // ============================================================
+        (function () {
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+            const wrench     = document.getElementById('cursor-wrench');
+            const wrenchR    = document.getElementById('cursor-wrench-r');
+            const wrenchPath = document.getElementById('wrench-svg-path');
+            const ring       = document.getElementById('cursor-ring');
+            if (!wrench || !ring) return;
+
+            // Hotspot = wrench jaw tip in element coords
+            // After scaleX(-1) flip, the Lucide wrench jaw tip lands at ~(8, 5)
+            const TIP_X = 8;
+            const TIP_Y = 5;
+
+            let ringSize   = 38;
+            let ringScale  = 1;
+            let isHovering = false;
+            let isClicking = false;
+
+            let mX = window.innerWidth  / 2;
+            let mY = window.innerHeight / 2;
+            let rX = mX, rY = mY;
+
+            // Rotation state:
+            //  • normal  → 0°
+            //  • hovering → +8°  (wrench tilted, ready to work)
+            //  • clicking → -24° (tightening snap)
+            function getRotation() {
+                if (isClicking) return -24;
+                if (isHovering) return 8;
+                return 0;
+            }
+
+            // Position outer wrapper: INSTANT (no CSS transition here)
+            function paintPosition() {
+                wrench.style.transform = `translate(${mX - TIP_X}px, ${mY - TIP_Y}px)`;
+            }
+
+            // Rotation inner wrapper: SMOOTH (CSS transition handles easing)
+            function paintRotation() {
+                if (wrenchR) wrenchR.style.transform = `rotate(${getRotation()}deg)`;
+            }
+
+            // ── mousemove: snap to cursor immediately — no rAF, no async
+            document.addEventListener('mousemove', (e) => {
+                mX = e.clientX;
+                mY = e.clientY;
+                paintPosition();
+            }, { passive: true });
+
+            // ── Ring: smooth lag in rAF loop
+            (function animateRing() {
+                rX += (mX - rX) * 0.15;
+                rY += (mY - rY) * 0.15;
+                const half = ringSize / 2;
+                ring.style.transform = `translate(${rX - half}px, ${rY - half}px) scale(${ringScale})`;
+                requestAnimationFrame(animateRing);
+            })();
+
+            // ── Hover: tilt wrench, turn orange, enlarge ring
+            document.querySelectorAll('a, button, .btn, .filter-btn, .service-card, .dispatch-card, .tilt-card').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    isHovering = true;
+                    paintRotation();
+                    if (wrenchPath) {
+                        wrenchPath.style.stroke = 'rgba(234, 88, 12, 0.92)';
+                        wrenchPath.style.fill   = 'rgba(234, 88, 12, 0.18)';
+                    }
+                    if (wrenchR) wrenchR.style.filter = 'drop-shadow(0 0 9px rgba(234, 88, 12, 0.80))';
+                    ringSize = 52;
+                    ring.style.width       = ringSize + 'px';
+                    ring.style.height      = ringSize + 'px';
+                    ring.style.borderColor = 'rgba(234, 88, 12, 0.45)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    isHovering = false;
+                    paintRotation();
+                    if (wrenchPath) {
+                        wrenchPath.style.stroke = '';
+                        wrenchPath.style.fill   = '';
+                    }
+                    if (wrenchR) wrenchR.style.filter = '';
+                    ringSize = 38;
+                    ring.style.width       = '';
+                    ring.style.height      = '';
+                    ring.style.borderColor = '';
+                });
+            });
+
+            // ── Click: tighten snap
+            document.addEventListener('mousedown', () => {
+                isClicking = true;
+                ringScale   = 0.8;
+                paintRotation();
+            });
+            document.addEventListener('mouseup', () => {
+                isClicking = false;
+                ringScale   = 1;
+                paintRotation();
+            });
+
+            // ── Hide when leaving browser window
+            document.addEventListener('mouseleave', () => {
+                wrench.style.opacity = '0';
+                ring.style.opacity   = '0';
+            });
+            document.addEventListener('mouseenter', () => {
+                wrench.style.opacity = '';
+                ring.style.opacity   = '';
+            });
+        })();
+
+        // ============================================================
+        // 3. HERO MOUSE PARALLAX
+        // ============================================================
+        (function () {
+            const heroBg   = document.getElementById('hero-bg-img');
+            const heroEl   = heroBg && heroBg.closest('.hero');
+            if (!heroBg || !heroEl) return;
+            if (window.matchMedia('(pointer: coarse)').matches) return; // skip on touch
+
+            const STRENGTH = 18; // px of max shift
+            heroEl.addEventListener('mousemove', (e) => {
+                const rect = heroEl.getBoundingClientRect();
+                const cx = (e.clientX - rect.left) / rect.width  - 0.5; // -0.5 to 0.5
+                const cy = (e.clientY - rect.top)  / rect.height - 0.5;
+                heroBg.style.transform = `scale(1.08) translate(${cx * -STRENGTH}px, ${cy * -STRENGTH}px)`;
+            });
+            heroEl.addEventListener('mouseleave', () => {
+                heroBg.style.transform = 'scale(1.08) translate(0,0)';
+            });
+        })();
+
+        // ============================================================
+        // 4. 3D CARD TILT
+        // ============================================================
+        (function () {
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const cx = (e.clientX - rect.left) / rect.width  - 0.5;
+                    const cy = (e.clientY - rect.top)  / rect.height - 0.5;
+                    const rotX =  cy * -14; // tilt X axis
+                    const rotY =  cx *  14; // tilt Y axis
+                    card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02,1.02,1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)';
+                });
+            });
+        })();
+
+        // ============================================================
+        // 5. TEXT SCRAMBLE on hero title
+        // ============================================================
+        (function () {
+            const el = document.getElementById('hero-title-scramble');
+            if (!el) return;
+
+            const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
+            const originalHTML = el.innerHTML;
+            const plainText = el.innerText; // just the flat text for scramble
+            const DURATION = 1200;
+            const DELAY    = 500; // wait before scramble starts
+
+            let frame = 0;
+            let rafId;
+            const startTime = performance.now() + DELAY;
+
+            // Build flat char list (preserving spaces and punctuation)
+            const chars = plainText.split('');
+
+            function scrambleTick(now) {
+                if (now < startTime) { rafId = requestAnimationFrame(scrambleTick); return; }
+                const elapsed  = now - startTime;
+                const progress = Math.min(elapsed / DURATION, 1);
+
+                const result = chars.map((orig, i) => {
+                    // Reveal chars progressively from left
+                    if (i / chars.length < progress) return orig;
+                    if (orig === '\n' || orig === ' ') return orig;
+                    return CHARS[Math.floor(Math.random() * CHARS.length)];
+                });
+
+                // Re-apply to first text node only (preserve the gradient span)
+                const firstLine = result.slice(0, plainText.indexOf('\n') + 1).join('');
+                const secondLine = result.slice(plainText.indexOf('\n') + 1).join('');
+                const gradSpan = el.querySelector('.gradient-text');
+                if (gradSpan) {
+                    el.firstChild.textContent = firstLine.replace('\n', '');
+                    gradSpan.textContent = secondLine;
+                }
+
+                if (progress < 1) {
+                    rafId = requestAnimationFrame(scrambleTick);
+                } else {
+                    // Restore exact original
+                    el.innerHTML = originalHTML;
+                }
+            }
+
+            // Only run once on page load
+            rafId = requestAnimationFrame(scrambleTick);
+        })();
+
+        // ============================================================
+        // 6. TYPEWRITER ROTATING TAGLINE
+        // ============================================================
+        (function () {
+            const target = document.getElementById('tw-text');
+            if (!target) return;
+
+            const phrases = [
+                'Your pipes. Our precision.',
+                'Rapid response. Guaranteed.',
+                'Licensed. Insured. Local.',
+                '30-minute emergency dispatch.',
+                'No call-out fee. No surprises.',
+            ];
+
+            let phraseIdx = 0;
+            let charIdx   = 0;
+            let deleting  = false;
+            const SPEED_TYPE = 55;
+            const SPEED_DEL  = 28;
+            const PAUSE_END  = 2200;
+            const PAUSE_START = 500;
+
+            function tick() {
+                const phrase = phrases[phraseIdx];
+                if (!deleting) {
+                    target.textContent = phrase.slice(0, ++charIdx);
+                    if (charIdx === phrase.length) {
+                        deleting = true;
+                        setTimeout(tick, PAUSE_END);
+                        return;
+                    }
+                    setTimeout(tick, SPEED_TYPE);
+                } else {
+                    target.textContent = phrase.slice(0, --charIdx);
+                    if (charIdx === 0) {
+                        deleting = false;
+                        phraseIdx = (phraseIdx + 1) % phrases.length;
+                        setTimeout(tick, PAUSE_START);
+                        return;
+                    }
+                    setTimeout(tick, SPEED_DEL);
+                }
+            }
+            // Start after hero entrance animation
+            setTimeout(tick, 1200);
+        })();
+
+        // ============================================================
+        // 7. MAGNETIC BUTTONS
+        // ============================================================
+        (function () {
+            if (window.matchMedia('(pointer: coarse)').matches) return;
+            document.querySelectorAll('.magnetic-btn').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect   = btn.getBoundingClientRect();
+                    const cx = e.clientX - rect.left - rect.width  / 2;
+                    const cy = e.clientY - rect.top  - rect.height / 2;
+                    btn.style.transform = `translate(${cx * 0.28}px, ${cy * 0.28}px)`;
+                    btn.style.boxShadow = `${-cx * 0.05}px ${-cy * 0.05}px 28px rgba(2,132,199,0.35)`;
+                });
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = 'translate(0,0)';
+                    btn.style.boxShadow = '';
+                });
+            });
+        })();
+
+        // ============================================================
+        // 8. LIVE CLOCK in dispatch card
+        // ============================================================
+        (function () {
+            const clock = document.getElementById('dispatch-clock');
+            if (!clock) return;
+            function updateClock() {
+                const now = new Date();
+                const h = now.getHours().toString().padStart(2, '0');
+                const m = now.getMinutes().toString().padStart(2, '0');
+                const s = now.getSeconds().toString().padStart(2, '0');
+                clock.textContent = `${h}:${m}:${s}`;
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        })();
+
+        // ============================================================
+        // 9. WORD-BY-WORD REVEAL on section titles
+        // ============================================================
+        (function () {
+            document.querySelectorAll('.section-title').forEach(el => {
+                // Wrap each word in a span
+                el.classList.add('word-reveal');
+                el.innerHTML = el.innerText.split(' ').map((w, i) =>
+                    `<span class="word" style="transition-delay:${i * 0.07}s">${w}</span>`
+                ).join(' ');
+            });
+
+            // Observe
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target); }
+                });
+            }, { threshold: 0.3 });
+            document.querySelectorAll('.word-reveal').forEach(el => obs.observe(el));
         })();
 
     </script>
